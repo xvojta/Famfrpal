@@ -1,17 +1,5 @@
-## YAML Template.
----
-name: Slaparoo
-
-author: xvojta
-
-main: com.javaminecraft.Slaparoo
-
-commands:
-    sl:
-        description: slaparoo comands (join, ...)
-        usage: /<command> sub command
-    slaparoosign:
-        description: slaparoo sign inserting mode on/off.
-        usage: /<command> [on | off ]
-
-version: 2.2
+name: Famfrpal
+version: 1.0.0
+author: xvojta_Nemo
+description: Famfrpal epic plugin!
+main: com.xvojta.famfrpal.Famfrpal
