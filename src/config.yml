@@ -1,0 +1,8 @@
+## Slaparoo plugin config
+---
+slaparoo-world-name: (deufalt seetings: slaparoo)
+lobby-world-name: (deufalt seeting: lobby)
+winner-score: (deufalt seeting: 20)
+minimal-player: (deufalt seeting: 2)
+maximal-player: (deufalt seeting: 10)
+knockback-level: (deufalt seeting: 4)

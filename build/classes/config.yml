@@ -1,0 +1,8 @@
+## Slaparoo plugin config
+---
+slaparoo-world-name: slaparoo
+lobby-world-name: lobby
+winner-score: 20
+minimal-player: 2
+maximal-player: 10
+knockback-level: 4

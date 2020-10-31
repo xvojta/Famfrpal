@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Slaparoo">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/dist/Slaparoo.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

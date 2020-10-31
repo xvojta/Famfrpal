@@ -1,0 +1,19 @@
+## YAML Template.
+---
+name: Slaparoo
+
+author: xvojta
+
+main: com.javaminecraft.Slaparoo
+
+depend: [Essentials, BlockStore, TitleAPI]
+
+commands:
+    sl:
+        description: slaparoo comands (join, ...)
+        usage: /<command> sub command
+    slaparoosign:
+        description: slaparoo sign inserting mode on/off.
+        usage: /<command> [on | off ]
+
+version: 2.2
