@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="Famfrpal:jar" />
+    </artifacts-to-build>
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="0f4a2fa5-5ab2-41dd-83b6-8fc3163ad868" name="Default Changelist" comment="" />
+    <list default="true" id="0f4a2fa5-5ab2-41dd-83b6-8fc3163ad868" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/artifacts/Famfrpal_jar/Famfrpal.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/Famfrpal_jar/Famfrpal.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Famfrpal/com/xvojta/famfrpal/Famfrpal.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Famfrpal/com/xvojta/famfrpal/Famfrpal.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Famfrpal/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Famfrpal/plugin.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/xvojta/famfrpal/Famfrpal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/xvojta/famfrpal/Famfrpal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/plugin.yml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -14,6 +26,9 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="ProjectId" id="1jdh1tawdKaVGC6VjoSJYZ9kgRY" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -21,7 +36,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/spigot-1.16.3.jar" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Artifacts" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />

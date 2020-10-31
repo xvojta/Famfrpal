@@ -3,3 +3,7 @@ version: 1.0.0
 author: xvojta_Nemo
 description: Famfrpal epic plugin!
 main: com.xvojta.famfrpal.Famfrpal
+commands:
+  fp:
+    description: Basic famfrpal plugin command
+    usage: fp
