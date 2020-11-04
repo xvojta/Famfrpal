@@ -6,4 +6,4 @@ main: com.xvojta.famfrpal.Famfrpal
 commands:
   fp:
     description: Basic famfrpal plugin command
-    usage: fp
+    usage: /<command> addScore [player] [amount]

@@ -5,12 +5,33 @@
       <artifact name="Famfrpal:jar" />
     </artifacts-to-build>
   </component>
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="0f4a2fa5-5ab2-41dd-83b6-8fc3163ad868" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/com/xvojta/famfrpal/FPTeamManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/artifacts/Famfrpal_jar/Famfrpal.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/Famfrpal_jar/Famfrpal.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Famfrpal/com/xvojta/famfrpal/Famfrpal.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Famfrpal/com/xvojta/famfrpal/Famfrpal.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Famfrpal/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Famfrpal/plugin.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/xvojta/famfrpal/Famfrpal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/xvojta/famfrpal/Famfrpal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/plugin.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,6 +71,17 @@
     </task>
     <servers />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="WindowStateProjectService">
     <state x="666" y="261" key="FileChooserDialogImpl" timestamp="1604142066200">
       <screen x="0" y="0" width="1920" height="1040" />
@@ -59,5 +91,9 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="440" y="94" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1604142090000" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1604505762757">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1604505762757" />
   </component>
 </project>
