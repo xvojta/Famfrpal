@@ -25,13 +25,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0f4a2fa5-5ab2-41dd-83b6-8fc3163ad868" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/com/xvojta/famfrpal/FPTeamManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/artifacts/Famfrpal_jar/Famfrpal.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/Famfrpal_jar/Famfrpal.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Famfrpal/com/xvojta/famfrpal/Famfrpal$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Famfrpal/com/xvojta/famfrpal/Famfrpal$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Famfrpal/com/xvojta/famfrpal/Famfrpal.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Famfrpal/com/xvojta/famfrpal/Famfrpal.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Famfrpal/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Famfrpal/plugin.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/xvojta/famfrpal/Famfrpal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/xvojta/famfrpal/Famfrpal.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/plugin.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/xvojta/famfrpal/FPTeamManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/xvojta/famfrpal/FPTeamManager.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,6 +59,22 @@
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
   </component>
+  <component name="RunManager">
+    <configuration name="Debug with Craftbukkit" type="Remote">
+      <module name="Famfrpal" />
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+      <option name="AUTO_RESTART" value="false" />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="5005" />
+        <option name="LOCAL" value="false" />
+      </RunnerSettings>
+      <method v="2" />
+    </configuration>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -83,10 +98,50 @@
     </option>
   </component>
   <component name="WindowStateProjectService">
+    <state x="414" y="174" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1604563055102">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="414" y="174" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1604563055102" />
+    <state width="451" height="466" key="DebuggerActiveHint" timestamp="1604564382167">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="451" height="466" key="DebuggerActiveHint/0.0.1920.1040@0.0.1920.1040" timestamp="1604564382167" />
     <state x="666" y="261" key="FileChooserDialogImpl" timestamp="1604142066200">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="666" y="261" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1604142066200" />
+    <state width="1877" height="348" key="GridCell.Tab.0.bottom" timestamp="1604564284311">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="348" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1604564284311" />
+    <state width="1877" height="348" key="GridCell.Tab.0.center" timestamp="1604564284311">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="348" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1604564284311" />
+    <state width="1877" height="348" key="GridCell.Tab.0.left" timestamp="1604564284311">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="348" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1604564284311" />
+    <state width="1877" height="348" key="GridCell.Tab.0.right" timestamp="1604564284311">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="348" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1604564284311" />
+    <state width="1877" height="348" key="GridCell.Tab.1.bottom" timestamp="1604564299846">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="348" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1604564299846" />
+    <state width="1877" height="348" key="GridCell.Tab.1.center" timestamp="1604564299845">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="348" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1604564299845" />
+    <state width="1877" height="348" key="GridCell.Tab.1.left" timestamp="1604564299844">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="348" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1604564299844" />
+    <state width="1877" height="348" key="GridCell.Tab.1.right" timestamp="1604564299845">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="348" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1604564299845" />
     <state x="440" y="94" key="SettingsEditor" timestamp="1604142090000">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -95,5 +150,16 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1604505762757" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/com/xvojta/famfrpal/Famfrpal.java</url>
+          <line>147</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
