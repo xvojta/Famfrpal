@@ -1,6 +1,7 @@
 package com.xvojta.famfrpal;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.advancement.Advancement;
@@ -20,16 +21,21 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.*;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class Famfrpal extends JavaPlugin implements Listener
 {
     private static final int ENDERDRAGONSCORE = 100;
     private static final int PLAYERBOUNTY = 5;
-    private static final int ELDERGUARDIANSCORE = 75;
-    private static final int WITHERSCORE = 75;
+    private static final int ELDERGUARDIANSCORE = 50;
+    private static final int WITHERSCORE = 50;
     public static Famfrpal Instance;
+    public boolean started = false;
     public Logger LOGGER = Bukkit.getLogger();
     public Scoreboard scoreboard;
     public Objective objective;
@@ -38,19 +44,12 @@ public class Famfrpal extends JavaPlugin implements Listener
     @Override
     public void onEnable()
     {
-        //fill teams
-        HashMap<String, String[]> teams = new HashMap<String, String[]>();
-        teams.put("TestTeam", new String[]{"xvojta", "NEMO_CZ"});
-        teamManager = new FPTeamManager(teams);
-
         Instance = this;
 
         Bukkit.getLogger().info("Famfrpal plugin funguje jako vzdy");
 
         PluginManager manager = getServer().getPluginManager();
         manager.registerEvents(this, this);
-
-        craeteScoreBoard(getServer().getWorld("world"));
     }
 
     @Override
@@ -60,19 +59,26 @@ public class Famfrpal extends JavaPlugin implements Listener
         World world = player.getWorld();
         Location spot = player.getLocation();
 
-        if (label.equalsIgnoreCase("fp"))
-        {
-            if (arguments[0] != null)
-            {
-                if (arguments[0] == "addScore")
-                {
-                    if (arguments[1] != null && arguments[2] != null)
-                    {
-                        addScore(getServer().getPlayer(arguments[1]), Integer.parseInt(arguments[2]));
+        if (player.isOp()) {
+            if (label.equalsIgnoreCase("fp score")) {
+                if (arguments[0] != null) {
+                    if (arguments[1] != null && arguments[2] != null) {
+                        Player targetPlayer = getServer().getPlayer(arguments[1]);
+
+                        if (arguments[0] == "add") {
+                            addScore(targetPlayer, Integer.parseInt(arguments[2]));
+                            return true;
+                        } else if (arguments[0] == "set") {
+                            setScore(targetPlayer, Integer.parseInt(arguments[2]));
+                            return true;
+                        }
                     }
                 }
             }
-            return true;
+            else  if (label.equalsIgnoreCase("fp start"))
+            {
+                start(world);
+            }
         }
         return false;
     }
@@ -143,9 +149,15 @@ public class Famfrpal extends JavaPlugin implements Listener
         score.setScore(newScore);
     }
 
+    public void setScore(Player player, int amount)
+    {
+        Score score = objective.getScore(player.getName());
+        score.setScore(amount);
+    }
+
     public void setScoreboardToPlayer(Player player)
     {
-        teamManager.getTeamByPlayer(player.getName()).addEntry(player.getName());
+        teamManager.getTeamByPlayer(player).addEntry(player.getName());
         player.setScoreboard(scoreboard);
         Score score = objective.getScore(player.getName());
         score.setScore(0);
@@ -160,6 +172,34 @@ public class Famfrpal extends JavaPlugin implements Listener
 
         for (String i : teamManager.getTeamsNames()) {
             teamManager.teams.put(i, scoreboard.registerNewTeam(i));
+            teamManager.teams.get(i).setAllowFriendlyFire(false);
+            teamManager.teams.get(i).setColor(ChatColor.getByChar("00FF00"));
+            teamManager.teams.get(i).setSuffix(" " + i);
         }
+    }
+
+    private void start(World world)
+    {
+        //fill teams
+        HashMap<String, ArrayList<Player>> teams = new HashMap<String, ArrayList<Player>>();
+
+        for (int i = 1; i < 9; i++)
+        {
+            ArrayList<Player> teamPlayers = new ArrayList<Player>();
+            for (Player p : world.getPlayers())
+            {
+                if (p.hasPermission("team" + i))
+                {
+                    teamPlayers.add(p);
+                }
+            }
+            teams.put("team" + "i", teamPlayers);
+        }
+
+        teamManager = new FPTeamManager(teams);
+
+        craeteScoreBoard(world);
+
+        started = true;
     }
 }

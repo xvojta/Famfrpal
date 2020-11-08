@@ -1,17 +1,16 @@
 package com.xvojta.famfrpal;
 
 import com.mysql.fabric.xmlrpc.base.Array;
+import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class FPTeamManager {
-    public HashMap<String, String[]> teamsNames;
+    public HashMap<String, ArrayList<Player>> teamsNames;
     public HashMap<String, Team> teams;
 
-    public FPTeamManager(HashMap<String, String[]> teams)
+    public FPTeamManager(HashMap<String, ArrayList<Player>> teams)
     {
         this.teamsNames = teams;
         this.teams = new HashMap<String, Team>();
@@ -22,13 +21,13 @@ public class FPTeamManager {
         return teamsNames.keySet();
     }
 
-    public Team getTeamByPlayer(String playerName)
+    public Team getTeamByPlayer(Player player)
     {
-        for (String[] s : teamsNames.values())
+        for (ArrayList<Player> s : teamsNames.values())
         {
-            for (int i = 0; i < s.length; i++)
+            for (int i = 0; i < s.stream().count(); i++)
             {
-                if (s[i].equalsIgnoreCase(playerName))
+                if (s.get(i) == player)
                 {
                     return teams.get(getKey(teamsNames, s));
                 }

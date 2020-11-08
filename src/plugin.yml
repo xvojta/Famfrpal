@@ -4,6 +4,30 @@ author: xvojta_Nemo
 description: Famfrpal epic plugin!
 main: com.xvojta.famfrpal.Famfrpal
 commands:
-  fp:
-    description: Basic famfrpal plugin command
-    usage: /<command> addScore [player] [amount]
+  fp score:
+    description: Change score of specific player
+    usage: "Usage: /<command> [set|add] [player] [amount]"
+    permission: op
+  fp start:
+    description: Start game
+    usage: "Usage: /<command>"
+    permission: op
+
+  permissions:
+    team1:
+      default: false
+    team2:
+      default: false
+    team3:
+      default: false
+    team4:
+      default: false
+    team5:
+      default: false
+    team6:
+      default: false
+    team7:
+      default: false
+    team8:
+      default: false
+

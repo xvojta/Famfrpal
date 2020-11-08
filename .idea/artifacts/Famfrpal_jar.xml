@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="Famfrpal:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/Famfrpal_jar</output-path>
-    <root id="archive" name="Famfrpal.jar">
-      <element id="module-output" name="Famfrpal" />
-    </root>
-  </artifact>
-</component>
