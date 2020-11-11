@@ -34,6 +34,7 @@ public class Famfrpal extends JavaPlugin implements Listener
     private static final int PLAYERBOUNTY = 5;
     private static final int ELDERGUARDIANSCORE = 50;
     private static final int WITHERSCORE = 50;
+    private static final int ADVANCEMENTSCORE = 5;
     public static Famfrpal Instance;
     public boolean started = false;
     public Logger LOGGER = Bukkit.getLogger();
@@ -59,25 +60,15 @@ public class Famfrpal extends JavaPlugin implements Listener
         World world = player.getWorld();
         Location spot = player.getLocation();
 
-        if (player.isOp()) {
-            if (label.equalsIgnoreCase("fp score")) {
-                if (arguments[0] != null) {
-                    if (arguments[1] != null && arguments[2] != null) {
-                        Player targetPlayer = getServer().getPlayer(arguments[1]);
 
-                        if (arguments[0] == "add") {
-                            addScore(targetPlayer, Integer.parseInt(arguments[2]));
-                            return true;
-                        } else if (arguments[0] == "set") {
-                            setScore(targetPlayer, Integer.parseInt(arguments[2]));
-                            return true;
-                        }
-                    }
-                }
-            }
-            else  if (label.equalsIgnoreCase("fp start"))
-            {
+        if (label.equalsIgnoreCase("fpstart")) {
+            if (sender instanceof Player && player.isOp()) {
+                world.getPlayers().forEach(player1 -> {player.sendMessage("Speedrun has started");});
                 start(world);
+            }
+            else
+            {
+                player.sendMessage("You don't have permissions to this command!");
             }
         }
         return false;
@@ -88,13 +79,6 @@ public class Famfrpal extends JavaPlugin implements Listener
         Player player = event.getPlayer();
 
         LOGGER.info("player joined FP");
-
-        Bukkit.getScheduler().runTaskLater(this, new Runnable() {
-            @Override
-            public void run() {
-                Famfrpal.Instance.setScoreboardToPlayer(player);
-            }
-        }, 20L);
     }
     //here the error appers. I need to add something like callLater
 
@@ -104,12 +88,13 @@ public class Famfrpal extends JavaPlugin implements Listener
         Player killedPlayer = event.getEntity();
         Player killer = killedPlayer.getKiller();
 
-        if (killer != null)
-        {
-            addScore(killer, PLAYERBOUNTY);
+        if (started) {
+            if (killer != null) {
+                addScore(killer, PLAYERBOUNTY);
+            }
+
+            addScore(killedPlayer, -PLAYERBOUNTY);
         }
-        
-        addScore(killedPlayer, -PLAYERBOUNTY);
     }
 
     @EventHandler
@@ -118,7 +103,7 @@ public class Famfrpal extends JavaPlugin implements Listener
         LivingEntity entity = event.getEntity();
         Player player = entity.getKiller();
 
-        if(player != null)
+        if(player != null && started)
         {
             if (event.getEntityType() == EntityType.ENDER_DRAGON)
             {
@@ -139,7 +124,12 @@ public class Famfrpal extends JavaPlugin implements Listener
     public void onPlayerDoneAdvancement(PlayerAdvancementDoneEvent event)
     {
         Player player = event.getPlayer();
-        event.getAdvancement().getCriteria().forEach((a) -> player.sendMessage(a));
+        String advancementKey = event.getAdvancement().getKey().toString();
+        if (!advancementKey.startsWith("minecraft:recipes/") && started)
+        {
+            player.sendMessage("Advancement done " + event.getAdvancement().getKey().toString());
+            addScore(player, ADVANCEMENTSCORE);
+        }
     }
 
     public void addScore(Player player, int amount)
@@ -170,11 +160,13 @@ public class Famfrpal extends JavaPlugin implements Listener
         objective = scoreboard.registerNewObjective("test", "dummy", "Score");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-        for (String i : teamManager.getTeamsNames()) {
-            teamManager.teams.put(i, scoreboard.registerNewTeam(i));
-            teamManager.teams.get(i).setAllowFriendlyFire(false);
-            teamManager.teams.get(i).setColor(ChatColor.getByChar("00FF00"));
-            teamManager.teams.get(i).setSuffix(" " + i);
+        int i = 0;
+        for (String s : teamManager.getTeamsNames()) {
+            teamManager.teams.put(s, scoreboard.registerNewTeam(s));
+            teamManager.teams.get(s).setAllowFriendlyFire(false);
+            teamManager.teams.get(s).setColor(ChatColor.values()[i]);
+            //teamManager.teams.get(s).setSuffix(" - " + s);
+            i++;
         }
     }
 
@@ -193,12 +185,14 @@ public class Famfrpal extends JavaPlugin implements Listener
                     teamPlayers.add(p);
                 }
             }
-            teams.put("team" + "i", teamPlayers);
+            teams.put("team " + i, teamPlayers);
         }
 
         teamManager = new FPTeamManager(teams);
 
         craeteScoreBoard(world);
+
+        teams.values().forEach(players -> {players.forEach(player -> {setScoreboardToPlayer(player);});});
 
         started = true;
     }
