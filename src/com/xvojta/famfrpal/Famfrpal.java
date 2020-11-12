@@ -212,18 +212,16 @@ public class Famfrpal extends JavaPlugin implements Listener
             }
             teamsScoresPlayers.put(score, team.getPlayers());
         });
-        //thats awful way to do this, I need to find how to lineup hashmap
-        for(Integer i = 0; i < 5000; i++)
+        List<Integer> scoresSorted = new ArrayList<Integer>(teamsScoresPlayers.keySet());
+        Collections.sort(scoresSorted);
+        for(Integer i : scoresSorted)
         {
-            if (teamsScoresPlayers.containsKey(i))
+            for (Player player : getServer().getOnlinePlayers())
             {
-                for (Player player : getServer().getOnlinePlayers())
+                teamsScoresPlayers.get(i).forEach(offlinePlayer ->
                 {
-                    teamsScoresPlayers.get(i).forEach(offlinePlayer ->
-                    {
-                        player.sendMessage(offlinePlayer.getName() + " - " + objective.getScore(offlinePlayer.getName()).getScore());
-                    });
-                }
+                    player.sendMessage(offlinePlayer.getName() + " - " + objective.getScore(offlinePlayer.getName()).getScore());
+                });
             }
         }
         World overworld = getServer().getWorlds().get(1);
