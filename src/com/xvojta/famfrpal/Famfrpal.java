@@ -1,10 +1,6 @@
 package com.xvojta.famfrpal;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.advancement.Advancement;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
@@ -20,12 +16,11 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.*;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.InputStream;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class Famfrpal extends JavaPlugin implements Listener
@@ -34,7 +29,7 @@ public class Famfrpal extends JavaPlugin implements Listener
     private static final int PLAYERBOUNTY = 5;
     private static final int ELDERGUARDIANSCORE = 50;
     private static final int WITHERSCORE = 50;
-    private static final int ADVANCEMENTSCORE = 5;
+    Map<String, Integer> ADVANCEMENTSSCORES;
     public static Famfrpal Instance;
     public boolean started = false;
     public Logger LOGGER = Bukkit.getLogger();
@@ -45,9 +40,16 @@ public class Famfrpal extends JavaPlugin implements Listener
     @Override
     public void onEnable()
     {
+        Yaml yaml = new Yaml();
+        InputStream inputStream = this.getClass()
+                .getClassLoader()
+                .getResourceAsStream("achievements.yml");
+        ADVANCEMENTSSCORES = yaml.load(inputStream);
+        LOGGER.info(ADVANCEMENTSSCORES.toString());
+
         Instance = this;
 
-        Bukkit.getLogger().info("Famfrpal plugin funguje jako vzdy");
+        LOGGER.info("Famfrpal plugin funguje jako vzdy");
 
         PluginManager manager = getServer().getPluginManager();
         manager.registerEvents(this, this);
@@ -108,6 +110,8 @@ public class Famfrpal extends JavaPlugin implements Listener
             if (event.getEntityType() == EntityType.ENDER_DRAGON)
             {
                 addScore(player, ENDERDRAGONSCORE);
+                end();
+                //end game
             }
             if (event.getEntityType() == EntityType.ELDER_GUARDIAN)
             {
@@ -128,7 +132,7 @@ public class Famfrpal extends JavaPlugin implements Listener
         if (!advancementKey.startsWith("minecraft:recipes/") && started)
         {
             player.sendMessage("Advancement done " + event.getAdvancement().getKey().toString());
-            addScore(player, ADVANCEMENTSCORE);
+            addScore(player, ADVANCEMENTSSCORES.get(advancementKey));
         }
     }
 
@@ -164,7 +168,7 @@ public class Famfrpal extends JavaPlugin implements Listener
         for (String s : teamManager.getTeamsNames()) {
             teamManager.teams.put(s, scoreboard.registerNewTeam(s));
             teamManager.teams.get(s).setAllowFriendlyFire(false);
-            teamManager.teams.get(s).setColor(ChatColor.values()[i]);
+            //teamManager.teams.get(s).setColor(ChatColor.values()[i]);
             //teamManager.teams.get(s).setSuffix(" - " + s);
             i++;
         }
@@ -180,7 +184,7 @@ public class Famfrpal extends JavaPlugin implements Listener
             ArrayList<Player> teamPlayers = new ArrayList<Player>();
             for (Player p : world.getPlayers())
             {
-                if (p.hasPermission("team" + i))
+                if (p.hasPermission("fp.team" + i))
                 {
                     teamPlayers.add(p);
                 }
@@ -195,5 +199,39 @@ public class Famfrpal extends JavaPlugin implements Listener
         teams.values().forEach(players -> {players.forEach(player -> {setScoreboardToPlayer(player);});});
 
         started = true;
+    }
+
+    private void end()
+    {
+        HashMap<Integer, Set<OfflinePlayer>> teamsScoresPlayers = new HashMap<Integer, Set<OfflinePlayer>>();
+        teamManager.teams.values().forEach(team -> {
+            int score = 0;
+            for (OfflinePlayer player : team.getPlayers())
+            {
+                score += objective.getScore(player.getName()).getScore();
+            }
+            teamsScoresPlayers.put(score, team.getPlayers());
+        });
+        //thats awful way to do this, I need to find how to lineup hashmap
+        for(Integer i = 0; i < 5000; i++)
+        {
+            if (teamsScoresPlayers.containsKey(i))
+            {
+                for (Player player : getServer().getOnlinePlayers())
+                {
+                    teamsScoresPlayers.get(i).forEach(offlinePlayer ->
+                    {
+                        player.sendMessage(offlinePlayer.getName() + " - " + objective.getScore(offlinePlayer.getName()).getScore());
+                    });
+                }
+            }
+        }
+        World overworld = getServer().getWorlds().get(1);
+        for (Player player : getServer().getOnlinePlayers())
+        {
+            player.teleport(overworld.getSpawnLocation());
+        }
+
+        started = false;
     }
 }

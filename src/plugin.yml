@@ -12,20 +12,23 @@ commands:
     usage: /<command> [set | add] [player]
 
   permissions:
-    team1:
-      default: false
-    team2:
-      default: false
-    team3:
-      default: false
-    team4:
-      default: false
-    team5:
-      default: false
-    team6:
-      default: false
-    team7:
-      default: false
-    team8:
-      default: false
+    fp.*:
+      description: Famfrpals permissions
+      children:
+        team1:
+          default: false
+        team2:
+          default: false
+        team3:
+          default: false
+        team4:
+          default: false
+        team5:
+          default: false
+        team6:
+          default: false
+        team7:
+          default: false
+        team8:
+          default: false
 
