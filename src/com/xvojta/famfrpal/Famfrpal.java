@@ -80,6 +80,10 @@ public class Famfrpal extends JavaPlugin implements Listener
     public void onLogin(PlayerLoginEvent event) {
         Player player = event.getPlayer();
 
+        if (started)
+        {
+            player.setScoreboard(scoreboard);
+        }
         LOGGER.info("player joined FP");
     }
     //here the error appers. I need to add something like callLater

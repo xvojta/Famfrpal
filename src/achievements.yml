@@ -1,80 +1,80 @@
-"minecraft:story/root":5
-"minecraft:minecraft:story/mine_stone":5
-"minecraft:story/upgrade_tools":5
-"minecraft:minecraft:story/smelt_iron":7
-"minecraft:story/obtain_armor":7
-"minecraft:minecraft:story/lava_bucket":5
-"minecraft:story/iron_tools":7
-"minecraft:story/deflect_arrow":5
-"minecraft:story/form_obsidian":5
-"minecraft:story/mine_diamond":10
-"minecraft:story/enter_the_nether":15
-"minecraft:story/shiny_gear":10
-"minecraft:story/enchant_item":10
-"minecraft:story/cure_zombie_villager":20
-"minecraft:story/follow_ender_eye":10
-"minecraft:minecraft:story/enter_the_end":10
-"minecraft:nether/root":15
-"minecraft:nether/return_to_sender":15
-"minecraft:nether/find_bastion":10
-"minecraft:nether/obtain_ancient_debris":10
-"minecraft:nether/fast_travel":10
-"minecraft:nether/find_fortress":10
-"minecraft:nether/obtain_crying_obsidian":5
-"minecraft:nether/distract_piglin":15
-"minecraft:nether/ride_strider":10
-"minecraft:nether/uneasy_alliance":25
-"minecraft:nether/loot_bastion":10
-"minecraft:nether/use_lodestone":15
-"minecraft:nether/netherite_armor":25
-"minecraft:nether/get_wither_skull":10
-"minecraft:nether/obtain_blaze_rod":10
-"minecraft:nether/charge_respawn_anchor":15
-"minecraft:nether/explore_nether":15
-"minecraft:nether/summon_wither":10
-"minecraft:nether/brew_potion":7
-"minecraft:nether/create_beacon":15
-"minecraft:nether/all_potions":25
-"minecraft:nether/create_full_beacon":30
-"minecraft:nether/all_effects":50
-"minecraft:end/root":10
-"minecraft:end/kill_dragon":20
-"minecraft:end/dragon_egg":15
-"minecraft:end/enter_end_gateway":10
-"minecraft:end/respawn_dragon":15
-"minecraft:end/dragon_breath":15
-"minecraft:end/find_end_city":15
-"minecraft:end/elytra":15
-"minecraft:end/levitate":10
-"minecraft:adventure/root":5
-"minecraft:adventure/voluntary_exile":10
-"minecraft:adventure/kill_a_mob":7
-"minecraft:adventure/trade":5
-"minecraft:adventure/honey_block_slide":15
-"minecraft:adventure/ol_betsy":7
-"minecraft:adventure/sleep_in_bed":5
-"minecraft:adventure/hero_of_the_village":25
-"minecraft:adventure/throw_trident":10
-"minecraft:adventure/shoot_arrow":5
-"minecraft:adventure/kill_all_mobs":35
-"minecraft:adventure/totem_of_undying":15
-"minecraft:adventure/summon_iron_golem":10
-"minecraft:adventure/two_birds_one_arrow":20
-"minecraft:adventure/whos_the_pillager_now":10
-"minecraft:adventure/arbalistic":20
-"minecraft:adventure/adventuring_time":50
-"minecraft:adventure/very_very_frightening":20
-"minecraft:adventure/sniper_duel":15
-"minecraft:adventure/bullseye":7
-"minecraft:husbandry/root":30
-"minecraft:husbandry/safely_harvest_honey":7
-"minecraft:husbandry/breed_an_animal":7
-"minecraft:husbandry/tame_an_animal":10
-"minecraft:husbandry/fishy_business":5
-"minecraft:husbandry/silk_touch_nest":15
-"minecraft:husbandry/plant_seed":5
-"minecraft:husbandry/bred_all_animals":25
-"minecraft:husbandry/complete_catalogue":20
-"minecraft:husbandry/tactical_fishing":5
-"minecraft:husbandry/balanced_diet":30
-"minecraft:husbandry/obtain_netherite_hoe":15
+"minecraft:story/root":  5
+"minecraft:minecraft: story/mine_stone":  5
+"minecraft:story/upgrade_tools":  5
+"minecraft:minecraft: story/smelt_iron":  7
+"minecraft:story/obtain_armor": 7
+"minecraft:minecraft: story/lava_bucket": 5
+"minecraft:story/iron_tools": 7
+"minecraft:story/deflect_arrow": 5
+"minecraft:story/form_obsidian": 5
+"minecraft:story/mine_diamond": 10
+"minecraft:story/enter_the_nether": 15
+"minecraft:story/shiny_gear": 10
+"minecraft:story/enchant_item": 10
+"minecraft:story/cure_zombie_villager": 20
+"minecraft:story/follow_ender_eye": 10
+"minecraft:minecraft: story/enter_the_end": 10
+"minecraft:nether/root": 15
+"minecraft:nether/return_to_sender": 15
+"minecraft:nether/find_bastion": 10
+"minecraft:nether/obtain_ancient_debris": 10
+"minecraft:nether/fast_travel": 10
+"minecraft:nether/find_fortress": 10
+"minecraft:nether/obtain_crying_obsidian": 5
+"minecraft:nether/distract_piglin": 15
+"minecraft:nether/ride_strider": 10
+"minecraft:nether/uneasy_alliance": 25
+"minecraft:nether/loot_bastion": 10
+"minecraft:nether/use_lodestone": 15
+"minecraft:nether/netherite_armor": 25
+"minecraft:nether/get_wither_skull": 10
+"minecraft:nether/obtain_blaze_rod": 10
+"minecraft:nether/charge_respawn_anchor": 15
+"minecraft:nether/explore_nether": 15
+"minecraft:nether/summon_wither": 10
+"minecraft:nether/brew_potion": 7
+"minecraft:nether/create_beacon": 15
+"minecraft:nether/all_potions": 25
+"minecraft:nether/create_full_beacon": 30
+"minecraft:nether/all_effects": 50
+"minecraft:end/root": 10
+"minecraft:end/kill_dragon": 20
+"minecraft:end/dragon_egg": 15
+"minecraft:end/enter_end_gateway": 10
+"minecraft:end/respawn_dragon": 15
+"minecraft:end/dragon_breath": 15
+"minecraft:end/find_end_city": 15
+"minecraft:end/elytra": 15
+"minecraft:end/levitate": 10
+"minecraft:adventure/root": 5
+"minecraft:adventure/voluntary_exile": 10
+"minecraft:adventure/kill_a_mob": 7
+"minecraft:adventure/trade": 5
+"minecraft:adventure/honey_block_slide": 15
+"minecraft:adventure/ol_betsy": 7
+"minecraft:adventure/sleep_in_bed": 5
+"minecraft:adventure/hero_of_the_village": 25
+"minecraft:adventure/throw_trident": 10
+"minecraft:adventure/shoot_arrow": 5
+"minecraft:adventure/kill_all_mobs": 35
+"minecraft:adventure/totem_of_undying": 15
+"minecraft:adventure/summon_iron_golem": 10
+"minecraft:adventure/two_birds_one_arrow": 20
+"minecraft:adventure/whos_the_pillager_now": 10
+"minecraft:adventure/arbalistic": 20
+"minecraft:adventure/adventuring_time": 50
+"minecraft:adventure/very_very_frightening": 20
+"minecraft:adventure/sniper_duel": 15
+"minecraft:adventure/bullseye": 7
+"minecraft:husbandry/root": 30
+"minecraft:husbandry/safely_harvest_honey": 7
+"minecraft:husbandry/breed_an_animal": 7
+"minecraft:husbandry/tame_an_animal": 10
+"minecraft:husbandry/fishy_business": 5
+"minecraft:husbandry/silk_touch_nest": 15
+"minecraft:husbandry/plant_seed": 5
+"minecraft:husbandry/bred_all_animals": 25
+"minecraft:husbandry/complete_catalogue": 20
+"minecraft:husbandry/tactical_fishing": 5
+"minecraft:husbandry/balanced_diet": 30
+"minecraft:husbandry/obtain_netherite_hoe": 15
