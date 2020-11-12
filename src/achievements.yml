@@ -1,9 +1,6 @@
 achievements:
   minecraft:adventure/adventuring_time: 40
   minecraft:adventure/kill_a_mob: 15
- 	minecraft:adventure/kill_all_mobs: 
-  minecraft:adventure/adventuring_time:
-  minecraft:adventure/kill_a_mob:
   minecraft:adventure/kill_all_mobs:
   minecraft:adventure/root:
   minecraft:adventure/shoot_arrow:
