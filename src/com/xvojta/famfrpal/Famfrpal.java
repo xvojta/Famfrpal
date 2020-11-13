@@ -183,7 +183,6 @@ public class Famfrpal extends JavaPlugin implements Listener
         String advancementKey = event.getAdvancement().getKey().toString();
         if (!advancementKey.startsWith("minecraft:recipes/") && started)
         {
-            player.sendMessage("Advancement done " + event.getAdvancement().getKey().toString());
             addScore(player, ADVANCEMENTSSCORES.get(advancementKey));
         }
     }
