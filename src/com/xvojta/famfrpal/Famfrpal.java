@@ -1,5 +1,7 @@
 package com.xvojta.famfrpal;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -40,10 +42,9 @@ public class Famfrpal extends JavaPlugin implements Listener
     @Override
     public void onEnable()
     {
+        //Load advancement score rewards from yaml file
         Yaml yaml = new Yaml();
-        InputStream inputStream = this.getClass()
-                .getClassLoader()
-                .getResourceAsStream("achievements.yml");
+        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("achievements.yml");
         ADVANCEMENTSSCORES = yaml.load(inputStream);
         LOGGER.info(ADVANCEMENTSSCORES.toString());
 
@@ -58,19 +59,61 @@ public class Famfrpal extends JavaPlugin implements Listener
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] arguments)
     {
-        Player player = (Player) sender;
-        World world = player.getWorld();
-        Location spot = player.getLocation();
+        World world = getServer().getWorlds().get(0);
 
 
         if (label.equalsIgnoreCase("fpstart")) {
-            if (sender instanceof Player && player.isOp()) {
-                world.getPlayers().forEach(player1 -> {player.sendMessage("Speedrun has started");});
+            if (!(sender instanceof Player)) {
                 start(world);
             }
             else
             {
-                player.sendMessage("You don't have permissions to this command!");
+                Player player = (Player) sender;
+                if (/*player.isOp()*/ player.hasPermission("fp.admin"))
+                {
+                    start(world);
+                }
+                else
+                {
+                    player.sendMessage("You don't have permissions to this command!");
+                }
+            }
+        }
+        else if (label.equalsIgnoreCase("fpend")) {
+            if (!(sender instanceof Player)) {
+                end();
+            }
+            else
+            {
+                Player player = (Player) sender;
+                if (/*player.isOp()*/ player.hasPermission("fp.admin"))
+                {
+                    end();
+                }
+                else
+                {
+                    player.sendMessage("You don't have permissions to this command!");
+                }
+            }
+        }
+        else if (label.equalsIgnoreCase("fpend")) {
+            if (!(sender instanceof Player)) {
+                if(arguments[0] != null && arguments[1] != null)
+                {
+
+                }
+            }
+            else
+            {
+                Player player = (Player) sender;
+                if (/*player.isOp()*/ player.hasPermission("fp.admin"))
+                {
+                    end();
+                }
+                else
+                {
+                    player.sendMessage("You don't have permissions to this command!");
+                }
             }
         }
         return false;
@@ -82,7 +125,12 @@ public class Famfrpal extends JavaPlugin implements Listener
 
         if (started)
         {
-            player.setScoreboard(scoreboard);
+            Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+                @Override
+                public void run() {
+                    player.setScoreboard(scoreboard);
+                }
+            }, 20L);
         }
         LOGGER.info("player joined FP");
     }
@@ -186,9 +234,9 @@ public class Famfrpal extends JavaPlugin implements Listener
         for (int i = 1; i < 9; i++)
         {
             ArrayList<Player> teamPlayers = new ArrayList<Player>();
-            for (Player p : world.getPlayers())
+            for (Player p : getServer().getOnlinePlayers())
             {
-                if (p.hasPermission("fp.team" + i))
+                if (p.hasPermission("fp.team" + i) && !p.isOp())
                 {
                     teamPlayers.add(p);
                 }
@@ -202,17 +250,22 @@ public class Famfrpal extends JavaPlugin implements Listener
 
         teams.values().forEach(players -> {players.forEach(player -> {setScoreboardToPlayer(player);});});
 
+        getServer().getOnlinePlayers().forEach(player -> {player.sendMessage("Speedrun has started");});
+
         started = true;
     }
 
     private void end()
     {
-        HashMap<Integer, Set<OfflinePlayer>> teamsScoresPlayers = new HashMap<Integer, Set<OfflinePlayer>>();
+        ListMultimap<Integer, Set<OfflinePlayer>> teamsScoresPlayers = ArrayListMultimap.create();
+        LOGGER.info(teamManager.teams.toString());
         teamManager.teams.values().forEach(team -> {
+            LOGGER.info(team.getName());
             int score = 0;
             for (OfflinePlayer player : team.getPlayers())
             {
                 score += objective.getScore(player.getName()).getScore();
+                LOGGER.info(player.getName() + " " + objective.getScore(player.getName()).getScore());
             }
             teamsScoresPlayers.put(score, team.getPlayers());
         });
@@ -222,17 +275,23 @@ public class Famfrpal extends JavaPlugin implements Listener
         {
             for (Player player : getServer().getOnlinePlayers())
             {
-                teamsScoresPlayers.get(i).forEach(offlinePlayer ->
+                for(Set<OfflinePlayer> offlinePlayers: teamsScoresPlayers.get(i))
                 {
-                    player.sendMessage(offlinePlayer.getName() + " - " + objective.getScore(offlinePlayer.getName()).getScore());
-                });
+                    offlinePlayers.forEach(offlinePlayer ->
+                    {
+                        player.sendMessage(offlinePlayer.getPlayer().getDisplayName() + ": " + objective.getScore(offlinePlayer.getName()).getScore());
+                    });
+                    player.sendMessage("Total team score: " + i.toString());
+                }
             }
         }
-        World overworld = getServer().getWorlds().get(1);
+        World overworld = getServer().getWorlds().get(0);
         for (Player player : getServer().getOnlinePlayers())
         {
             player.teleport(overworld.getSpawnLocation());
         }
+
+        getServer().getOnlinePlayers().forEach(player -> {player.sendMessage("Speedrun has ended");});
 
         started = false;
     }

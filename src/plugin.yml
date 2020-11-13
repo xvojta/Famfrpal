@@ -7,6 +7,9 @@ commands:
   fpstart:
     description: famfrpal start command
     usage: /<command>
+  fpend:
+    description: famfrpal end command
+    usage: /<command>
   fpscore:
     description: famfrpal score edit.
     usage: /<command> [set | add] [player]
@@ -30,5 +33,7 @@ commands:
         team7:
           default: false
         team8:
+          default: false
+        admin:
           default: false
 
