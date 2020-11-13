@@ -247,7 +247,8 @@ public class Famfrpal extends JavaPlugin implements Listener
 
         craeteScoreBoard(world);
 
-        getServer().getOnlinePlayers().forEach(player -> {setScoreboardToPlayer(player);});
+        teams.values().forEach(players -> {players.forEach(player -> {setScoreboardToPlayer(player);});});
+        getServer().getOnlinePlayers().forEach(player -> {if (player.isOp()) player.setScoreboard(scoreboard);});
 
         getServer().getOnlinePlayers().forEach(player -> {player.sendMessage("Speedrun has started");});
 
