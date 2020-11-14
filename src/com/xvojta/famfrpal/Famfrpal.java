@@ -159,19 +159,18 @@ public class Famfrpal extends JavaPlugin implements Listener
 
         if(player != null && started)
         {
-            if (event.getEntityType() == EntityType.ENDER_DRAGON)
-            {
-                addScore(player, ENDERDRAGONSCORE);
-                end();
-                //end game
-            }
-            if (event.getEntityType() == EntityType.ELDER_GUARDIAN)
-            {
-                addScore(player, ELDERGUARDIANSCORE);
-            }
-            if (event.getEntityType() == EntityType.WITHER)
-            {
-                addScore(player, WITHERSCORE);
+            if(!player.isOp()) {
+                if (event.getEntityType() == EntityType.ENDER_DRAGON) {
+                    addScore(player, ENDERDRAGONSCORE);
+                    end();
+                    //end game
+                }
+                if (event.getEntityType() == EntityType.ELDER_GUARDIAN) {
+                    addScore(player, ELDERGUARDIANSCORE);
+                }
+                if (event.getEntityType() == EntityType.WITHER) {
+                    addScore(player, WITHERSCORE);
+                }
             }
         }
     }
@@ -181,7 +180,7 @@ public class Famfrpal extends JavaPlugin implements Listener
     {
         Player player = event.getPlayer();
         String advancementKey = event.getAdvancement().getKey().toString();
-        if (!advancementKey.startsWith("minecraft:recipes/") && started)
+        if (!advancementKey.startsWith("minecraft:recipes/") && started && !player.isOp())
         {
             addScore(player, ADVANCEMENTSSCORES.get(advancementKey));
         }

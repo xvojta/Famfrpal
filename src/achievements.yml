@@ -1,9 +1,9 @@
 "minecraft:story/root":  5
-"minecraft:minecraft: story/mine_stone":  5
+"minecraft:story/mine_stone":  5
 "minecraft:story/upgrade_tools":  5
-"minecraft:minecraft: story/smelt_iron":  7
+"minecraft:story/smelt_iron":  7
 "minecraft:story/obtain_armor": 7
-"minecraft:minecraft: story/lava_bucket": 5
+"minecraft:story/lava_bucket": 5
 "minecraft:story/iron_tools": 7
 "minecraft:story/deflect_arrow": 5
 "minecraft:story/form_obsidian": 5
@@ -13,7 +13,7 @@
 "minecraft:story/enchant_item": 10
 "minecraft:story/cure_zombie_villager": 20
 "minecraft:story/follow_ender_eye": 10
-"minecraft:minecraft: story/enter_the_end": 10
+"minecraft:story/enter_the_end": 10
 "minecraft:nether/root": 15
 "minecraft:nether/return_to_sender": 15
 "minecraft:nether/find_bastion": 10
