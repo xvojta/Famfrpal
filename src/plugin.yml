@@ -4,6 +4,7 @@ author: xvojta_Nemo
 description: Famfrpal epic plugin!
 main: com.xvojta.famfrpal.Famfrpal
 commands:
+  compass: {}
   fpstart:
     description: famfrpal start command
     usage: /<command>

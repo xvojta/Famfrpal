@@ -2,27 +2,49 @@ package com.xvojta.famfrpal;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import net.minecraft.server.v1_16_R2.Block;
 import org.bukkit.*;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.advancement.AdvancementProgress;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.PistonMoveReaction;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.conversations.Conversation;
+import org.bukkit.conversations.ConversationAbandonedEvent;
+import org.bukkit.entity.*;
+import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerAdvancementDoneEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.inventory.*;
+import org.bukkit.map.MapView;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.permissions.PermissionAttachmentInfo;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.*;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.RayTraceResult;
+import org.bukkit.util.Vector;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -40,10 +62,13 @@ public class Famfrpal extends JavaPlugin implements Listener
     public Scoreboard scoreboard;
     public Objective objective;
     public FPTeamManager teamManager;
+    public  Compass compass;
 
     @Override
     public void onEnable()
     {
+        compass = new Compass();
+
         //Load advancement score rewards from yaml file
         Yaml yaml = new Yaml();
         InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("achievements.yml");
@@ -136,6 +161,18 @@ public class Famfrpal extends JavaPlugin implements Listener
         }
     }
 
+    @EventHandler
+    public  void onPlayerQuit(PlayerQuitEvent event)
+    {
+        compass.removePlayersOnQuit(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onPlayerUse(PlayerInteractEvent event)
+    {
+        compass.onRightButtonPress(event.getPlayer(), this);
+    }
+
     @EventHandler (priority = EventPriority.LOWEST)
     public void onLogin(PlayerLoginEvent event) {
         Player player = event.getPlayer();
@@ -203,17 +240,29 @@ public class Famfrpal extends JavaPlugin implements Listener
         }
     }
 
-    public void addScore(Player player, int amount)
+    public void addScore(Player p, int amount)
     {
-        Score score = objective.getScore(player.getName());
-        int newScore = score.getScore() + amount;
-        score.setScore(newScore);
+        for (int i = 1; i < 9; i++)
+        {
+            if (p.hasPermission("fp.team" + i) && (!p.isOp() || !p.hasPermission("fp.admin")))
+            {
+                Score score = objective.getScore(p.getName());
+                int newScore = score.getScore() + amount;
+                score.setScore(newScore);
+            }
+        }
     }
 
-    public void setScore(Player player, int amount)
+    public void setScore(Player p, int amount)
     {
-        Score score = objective.getScore(player.getName());
-        score.setScore(amount);
+        for (int i = 1; i < 9; i++)
+        {
+            if (p.hasPermission("fp.team" + i) && (!p.isOp() || !p.hasPermission("fp.admin")))
+            {
+                Score score = objective.getScore(p.getName());
+                score.setScore(amount);
+            }
+        }
     }
 
     public void setScoreboardToPlayer(Player player)
@@ -251,7 +300,7 @@ public class Famfrpal extends JavaPlugin implements Listener
             ArrayList<Player> teamPlayers = new ArrayList<Player>();
             for (Player p : getServer().getOnlinePlayers())
             {
-                if (p.hasPermission("fp.team" + i) && !p.isOp() && !p.hasPermission("fp.admin"))
+                if (p.hasPermission("fp.team" + i) && (!p.isOp() || !p.hasPermission("fp.admin")))
                 {
                     teamPlayers.add(p);
                 }
@@ -263,8 +312,8 @@ public class Famfrpal extends JavaPlugin implements Listener
 
         craeteScoreBoard(world);
 
+        getServer().getOnlinePlayers().forEach(player -> {player.setScoreboard(scoreboard);});
         teams.values().forEach(players -> {players.forEach(player -> {setScoreboardToPlayer(player);});});
-        getServer().getOnlinePlayers().forEach(player -> {if (player.isOp()) player.setScoreboard(scoreboard);});
 
         getServer().getOnlinePlayers().forEach(player -> {player.sendMessage("Speedrun has started");});
 
