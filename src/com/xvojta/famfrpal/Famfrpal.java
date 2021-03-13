@@ -2,6 +2,7 @@ package com.xvojta.famfrpal;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import net.minecraft.server.v1_16_R2.Block;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
@@ -21,16 +23,16 @@ import org.bukkit.scoreboard.*;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.logging.Logger;
 
 public class Famfrpal extends JavaPlugin implements Listener
 {
     private static final int ENDERDRAGONSCORE = 100;
-    private static final int PLAYERBOUNTY = 5;
-    private static final int ELDERGUARDIANSCORE = 50;
+    private static final int PLAYERBOUNTY = 15;
+    private static final int ELDERGUARDIANSCORE = 75;
     private static final int WITHERSCORE = 50;
+    private static final int ENDCRYSTALSCORE = 10;
     Map<String, Integer> ADVANCEMENTSSCORES;
     public static Famfrpal Instance;
     public boolean started = false;
@@ -117,6 +119,21 @@ public class Famfrpal extends JavaPlugin implements Listener
             }
         }
         return false;
+    }
+
+    @EventHandler
+    public void BlockBreakEvent(BlockBreakEvent event)
+    {
+        Player player = event.getPlayer();
+
+        if (started) {
+            if (player != null) {
+                if (event.getBlock().getType() == Material.END_CRYSTAL)
+                {
+                    addScore(player, ENDCRYSTALSCORE);
+                }
+            }
+        }
     }
 
     @EventHandler (priority = EventPriority.LOWEST)
@@ -234,7 +251,7 @@ public class Famfrpal extends JavaPlugin implements Listener
             ArrayList<Player> teamPlayers = new ArrayList<Player>();
             for (Player p : getServer().getOnlinePlayers())
             {
-                if (p.hasPermission("fp.team" + i) && !p.isOp())
+                if (p.hasPermission("fp.team" + i) && !p.isOp() && !p.hasPermission("fp.admin"))
                 {
                     teamPlayers.add(p);
                 }
