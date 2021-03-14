@@ -20,6 +20,7 @@ import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -170,6 +171,7 @@ public class Famfrpal extends JavaPlugin implements Listener
     @EventHandler
     public void onPlayerUse(PlayerInteractEvent event)
     {
+        if (event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.LEFT_CLICK_BLOCK)) return;
         compass.onRightButtonPress(event.getPlayer(), this);
     }
 

@@ -9,28 +9,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 
 public class Compass
 {
-    HashMap<Player, Iterator> trackingPlayers = new HashMap<Player, Iterator>();
-
-    public Compass()
-    {
-
-    }
+    HashMap<Player, Player> trackingPlayers = new HashMap<Player, Player>();
 
     public void onRightButtonPress(CommandSender sender, Plugin plugin)
     {
         if (!(sender instanceof Player)) return;
-        if (Bukkit.getOnlinePlayers().size() < 2) {
-            sender.sendMessage("Not enough players on server");
-            return;
-        }
 
         final Player player = (Player)sender;
-
 
         //First check if player is holding a compass
         if (!(player.getInventory().getItemInMainHand().getType().equals(Material.COMPASS) || player.getInventory().getItemInOffHand().getType().equals(Material.COMPASS)))
@@ -38,36 +27,38 @@ public class Compass
             return;
         }
 
-        Iterator itr;
-
-        if (trackingPlayers.containsKey(player))
+        //check if enough valid players are on the server
+        int validPlayers = 0;
+        for (Player p:Bukkit.getOnlinePlayers())
         {
-            itr = trackingPlayers.get(player);
+            if(p != player /*&& player.canSee(p) && !p.hasPermission("fp.admin")*/) validPlayers++;
         }
-        else
-        {
-            itr = Bukkit.getOnlinePlayers().iterator();
+        if (validPlayers < 1) {
+            sender.sendMessage("Not enough players on server");
+            return;
         }
 
         Player newTarget;
-        newTarget = (Player) itr.next();
 
-        //Don't allow tracking self
-        while (newTarget == player || newTarget == null || !player.canSee(newTarget) || !newTarget.hasPermission("fp.admin"))
+        if (trackingPlayers.containsKey(player))
         {
-            if (itr.hasNext()) {
-                newTarget = (Player) itr.next();
-            }
-            else
-            {
-                itr = Bukkit.getOnlinePlayers().iterator();
-            }
+            newTarget = getNextPlayer(trackingPlayers.get(player));
+        }
+        else
+        {
+            newTarget = getNextPlayer(null);
+        }
+
+        //Don't allow tracking self, admins and spectators
+        while (newTarget == player /*|| !player.canSee(newTarget) || !newTarget.hasPermission("fp.admin")*/)
+        {
+            newTarget = getNextPlayer(newTarget);
         }
 
         final Player target = newTarget;
 
-        trackingPlayers.put(player, itr);
-        player.sendMessage(ChatColor.GREEN + "Your compass is now tracking " + target.getName() + ".");
+        trackingPlayers.put(player, target);
+        player.sendMessage(ChatColor.GREEN + "Your compass is now tracking " + ChatColor.RED + target.getName() + ChatColor.GREEN + ".");
 
         new BukkitRunnable()
         {
@@ -87,5 +78,26 @@ public class Compass
     public void removePlayersOnQuit(Player player)
     {
         trackingPlayers.remove(player);
+    }
+
+    private Player getNextPlayer(Player player)
+    {
+        ArrayList<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+        ArrayList<UUID> playersID = new ArrayList<>();
+        for (Player p:players)
+        {
+            playersID.add(p.getUniqueId());
+        }
+        Collections.sort(playersID);
+
+        if (player == null) return Bukkit.getPlayer(playersID.get(0));
+
+        int currentIDIndex = playersID.indexOf(player.getUniqueId());
+        if (playersID.size() > currentIDIndex+1)
+        {
+            return Bukkit.getPlayer(playersID.get(currentIDIndex+1));
+        }
+
+        return Bukkit.getPlayer(playersID.get(0));
     }
 }
