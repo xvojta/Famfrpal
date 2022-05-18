@@ -15,6 +15,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.event.EventHandler;
@@ -22,6 +23,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -51,9 +53,10 @@ import java.util.logging.Logger;
 
 public class Famfrpal extends JavaPlugin implements Listener
 {
+    public static final int TEAMCOUNT = 14;
     private static final int ENDERDRAGONSCORE = 100;
     private static final int PLAYERBOUNTY = 15;
-    private static final int ELDERGUARDIANSCORE = 75;
+    private static final int ELDERGUARDIANSCORE = 50;
     private static final int WITHERSCORE = 50;
     private static final int ENDCRYSTALSCORE = 10;
     Map<String, Integer> ADVANCEMENTSSCORES;
@@ -63,7 +66,7 @@ public class Famfrpal extends JavaPlugin implements Listener
     public Scoreboard scoreboard;
     public Objective objective;
     public FPTeamManager teamManager;
-    public  Compass compass;
+    public Compass compass;
 
     @Override
     public void onEnable()
@@ -146,6 +149,18 @@ public class Famfrpal extends JavaPlugin implements Listener
         }
         return false;
     }
+
+    @EventHandler(priority=EventPriority.HIGH)
+    public void onBlockBreak(BlockBreakEvent event){
+        Material block = event.getBlock().getType();
+        Player player = event.getPlayer();
+        if (block == Material.GRASS_BLOCK){
+            event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.DIAMOND, 1));
+            event.setCancelled(true);
+            event.getBlock().setType(Material.AIR);
+        }
+    }
+
 
     @EventHandler
     public void BlockBreakEvent(BlockBreakEvent event)
@@ -244,9 +259,9 @@ public class Famfrpal extends JavaPlugin implements Listener
 
     public void addScore(Player p, int amount)
     {
-        for (int i = 1; i < 9; i++)
+        for (int i = 0; i < TEAMCOUNT+1; i++)
         {
-            if (p.hasPermission("fp.team" + i) && (!p.isOp() || !p.hasPermission("fp.admin")))
+            if (p.hasPermission("fp.team" + i) && !p.isOp() && !p.hasPermission("fp.admin"))
             {
                 Score score = objective.getScore(p.getName());
                 int newScore = score.getScore() + amount;
@@ -257,9 +272,9 @@ public class Famfrpal extends JavaPlugin implements Listener
 
     public void setScore(Player p, int amount)
     {
-        for (int i = 1; i < 9; i++)
+        for (int i = 0; i < TEAMCOUNT+1; i++)
         {
-            if (p.hasPermission("fp.team" + i) && (!p.isOp() || !p.hasPermission("fp.admin")))
+            if (p.hasPermission("fp.team" + i) && !p.isOp() && !p.hasPermission("fp.admin"))
             {
                 Score score = objective.getScore(p.getName());
                 score.setScore(amount);
@@ -286,7 +301,7 @@ public class Famfrpal extends JavaPlugin implements Listener
         for (String s : teamManager.getTeamsNames()) {
             teamManager.teams.put(s, scoreboard.registerNewTeam(s));
             teamManager.teams.get(s).setAllowFriendlyFire(false);
-            //teamManager.teams.get(s).setColor(ChatColor.values()[i]);
+            teamManager.teams.get(s).setColor(ChatColor.values()[i]);
             //teamManager.teams.get(s).setSuffix(" - " + s);
             i++;
         }
@@ -297,17 +312,17 @@ public class Famfrpal extends JavaPlugin implements Listener
         //fill teams
         HashMap<String, ArrayList<Player>> teams = new HashMap<String, ArrayList<Player>>();
 
-        for (int i = 1; i < 9; i++)
+        for (int i = 0; i < TEAMCOUNT+1; i++)
         {
             ArrayList<Player> teamPlayers = new ArrayList<Player>();
             for (Player p : getServer().getOnlinePlayers())
             {
-                if (p.hasPermission("fp.team" + i) && (!p.isOp() || !p.hasPermission("fp.admin")))
+                if (p.hasPermission("fp.team" + i) && !p.isOp() && !p.hasPermission("fp.admin"))
                 {
                     teamPlayers.add(p);
                 }
             }
-            teams.put("team " + i, teamPlayers);
+            teams.put("team" + i, teamPlayers);
         }
 
         teamManager = new FPTeamManager(teams);
@@ -317,14 +332,14 @@ public class Famfrpal extends JavaPlugin implements Listener
         getServer().getOnlinePlayers().forEach(player -> {player.setScoreboard(scoreboard);});
         teams.values().forEach(players -> {players.forEach(player -> {setScoreboardToPlayer(player);});});
 
-        getServer().getOnlinePlayers().forEach(player -> {player.sendMessage("Speedrun has started");});
+        getServer().getOnlinePlayers().forEach(player -> {player.sendMessage(ChatColor.RED + "Speedrun has started");});
 
         started = true;
     }
 
     private void end()
     {
-        ListMultimap<Integer, Set<OfflinePlayer>> teamsScoresPlayers = ArrayListMultimap.create();
+        ListMultimap<Integer, Team> teamsScoresPlayers = ArrayListMultimap.create();
         LOGGER.info(teamManager.teams.toString());
         teamManager.teams.values().forEach(team -> {
             LOGGER.info(team.getName());
@@ -334,7 +349,7 @@ public class Famfrpal extends JavaPlugin implements Listener
                 score += objective.getScore(player.getName()).getScore();
                 LOGGER.info(player.getName() + " " + objective.getScore(player.getName()).getScore());
             }
-            teamsScoresPlayers.put(score, team.getPlayers());
+            teamsScoresPlayers.put(score, team);
         });
         List<Integer> scoresSorted = new ArrayList<Integer>(teamsScoresPlayers.keySet());
         Collections.sort(scoresSorted);
@@ -342,13 +357,18 @@ public class Famfrpal extends JavaPlugin implements Listener
         {
             for (Player player : getServer().getOnlinePlayers())
             {
-                for(Set<OfflinePlayer> offlinePlayers: teamsScoresPlayers.get(i))
+                for(Team team: teamsScoresPlayers.get(i))
                 {
-                    offlinePlayers.forEach(offlinePlayer ->
-                    {
-                        player.sendMessage(offlinePlayer.getPlayer().getDisplayName() + ": " + objective.getScore(offlinePlayer.getName()).getScore());
-                    });
-                    player.sendMessage("Total team score: " + i.toString());
+                    Collection<OfflinePlayer> offlinePlayers = team.getPlayers();
+                    ChatColor teamColor = team.getColor();
+                    //tohle neni stoprocentni
+                    if (offlinePlayers.stream().count() > 0) {
+                        offlinePlayers.forEach(offlinePlayer ->
+                        {
+                            player.sendMessage(teamColor + offlinePlayer.getPlayer().getDisplayName() + ": " + objective.getScore(offlinePlayer.getName()).getScore());
+                        });
+                        player.sendMessage(teamColor + "Total team score: " + i.toString());
+                    }
                 }
             }
         }
@@ -358,7 +378,7 @@ public class Famfrpal extends JavaPlugin implements Listener
             player.teleport(overworld.getSpawnLocation());
         }
 
-        getServer().getOnlinePlayers().forEach(player -> {player.sendMessage("Speedrun has ended");});
+        getServer().getOnlinePlayers().forEach(player -> {player.sendMessage(ChatColor.RED + "Speedrun has ended");});
 
         started = false;
     }

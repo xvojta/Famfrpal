@@ -31,7 +31,7 @@ public class Compass
         int validPlayers = 0;
         for (Player p:Bukkit.getOnlinePlayers())
         {
-            if(p != player /*&& player.canSee(p) && !p.hasPermission("fp.admin")*/) validPlayers++;
+            if(p != player && player.canSee(p) && !p.hasPermission("fp.admin")) validPlayers++;
         }
         if (validPlayers < 1) {
             sender.sendMessage("Not enough players on server");
@@ -50,7 +50,7 @@ public class Compass
         }
 
         //Don't allow tracking self, admins and spectators
-        while (newTarget == player /*|| !player.canSee(newTarget) || !newTarget.hasPermission("fp.admin")*/)
+        while (newTarget == player || !player.canSee(newTarget) || newTarget.hasPermission("fp.admin"))
         {
             newTarget = getNextPlayer(newTarget);
         }
@@ -72,7 +72,7 @@ public class Compass
                 else
                     player.setCompassTarget(target.getLocation());
             }
-        }.runTaskTimer(plugin, 5L, 300L);
+        }.runTaskTimer(plugin, 5L, 40L);
     }
 
     public void removePlayersOnQuit(Player player)
