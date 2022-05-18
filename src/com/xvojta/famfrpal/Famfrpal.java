@@ -2,6 +2,8 @@ package com.xvojta.famfrpal;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
@@ -46,20 +48,18 @@ import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.FileWriter;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.InetSocketAddress;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
 
 public class Famfrpal extends JavaPlugin implements Listener
 {
-    public static final int TEAMCOUNT = 14;
-    private static final int ENDERDRAGONSCORE = 100;
-    private static final int PLAYERBOUNTY = 15;
-    private static final int ELDERGUARDIANSCORE = 50;
-    private static final int WITHERSCORE = 50;
-    private static final int ENDCRYSTALSCORE = 10;
-    Map<String, Integer> ADVANCEMENTSSCORES;
+    HashMap<Material, Material> DropsOverrite = new HashMap<>();
     public static Famfrpal Instance;
     public boolean started = false;
     public Logger LOGGER = Bukkit.getLogger();
@@ -67,6 +67,8 @@ public class Famfrpal extends JavaPlugin implements Listener
     public Objective objective;
     public FPTeamManager teamManager;
     public Compass compass;
+
+    private static Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
 
     @Override
     public void onEnable()
@@ -76,8 +78,6 @@ public class Famfrpal extends JavaPlugin implements Listener
         //Load advancement score rewards from yaml file
         Yaml yaml = new Yaml();
         InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("achievements.yml");
-        ADVANCEMENTSSCORES = yaml.load(inputStream);
-        LOGGER.info(ADVANCEMENTSSCORES.toString());
 
         Instance = this;
 
@@ -85,6 +85,25 @@ public class Famfrpal extends JavaPlugin implements Listener
 
         PluginManager manager = getServer().getPluginManager();
         manager.registerEvents(this, this);
+
+/*        DropsOverrite.put(Material.DIRT, Material.DIAMOND);
+        DropsOverrite.put(Material.GRASS_BLOCK, Material.GOLDEN_HOE);
+        String json = gson.toJson(DropsOverrite);
+
+        try (PrintWriter out = new PrintWriter(new FileWriter("drops.json"))) {
+            out.write(json);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+        String json = "";
+        try
+        {
+            json = new String(Files.readAllBytes(Paths.get("drops.json")));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        DropsOverrite = gson.fromJson(json, DropsOverrite.getClass());
+        LOGGER.info(json);
     }
 
     @Override
@@ -161,22 +180,6 @@ public class Famfrpal extends JavaPlugin implements Listener
         }
     }
 
-
-    @EventHandler
-    public void BlockBreakEvent(BlockBreakEvent event)
-    {
-        Player player = event.getPlayer();
-
-        if (started) {
-            if (player != null) {
-                if (event.getBlock().getType() == Material.END_CRYSTAL)
-                {
-                    addScore(player, ENDCRYSTALSCORE);
-                }
-            }
-        }
-    }
-
     @EventHandler
     public  void onPlayerQuit(PlayerQuitEvent event)
     {
@@ -190,23 +193,6 @@ public class Famfrpal extends JavaPlugin implements Listener
         compass.onRightButtonPress(event.getPlayer(), this);
     }
 
-    @EventHandler (priority = EventPriority.LOWEST)
-    public void onLogin(PlayerLoginEvent event) {
-        Player player = event.getPlayer();
-
-        if (started)
-        {
-            Bukkit.getScheduler().runTaskLater(this, new Runnable() {
-                @Override
-                public void run() {
-                    player.setScoreboard(scoreboard);
-                }
-            }, 20L);
-        }
-        LOGGER.info("player joined FP");
-    }
-    //here the error appers. I need to add something like callLater
-
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event)
     {
@@ -215,10 +201,7 @@ public class Famfrpal extends JavaPlugin implements Listener
 
         if (started) {
             if (killer != null) {
-                addScore(killer, PLAYERBOUNTY);
             }
-
-            addScore(killedPlayer, -PLAYERBOUNTY);
         }
     }
 
@@ -228,109 +211,20 @@ public class Famfrpal extends JavaPlugin implements Listener
         LivingEntity entity = event.getEntity();
         Player player = entity.getKiller();
 
-        if(player != null && started)
+        if(player != null)
         {
             if(!player.isOp()) {
                 if (event.getEntityType() == EntityType.ENDER_DRAGON) {
-                    addScore(player, ENDERDRAGONSCORE);
                     end();
                     //end game
                 }
-                if (event.getEntityType() == EntityType.ELDER_GUARDIAN) {
-                    addScore(player, ELDERGUARDIANSCORE);
-                }
-                if (event.getEntityType() == EntityType.WITHER) {
-                    addScore(player, WITHERSCORE);
-                }
             }
-        }
-    }
-
-    @EventHandler
-    public void onPlayerDoneAdvancement(PlayerAdvancementDoneEvent event)
-    {
-        Player player = event.getPlayer();
-        String advancementKey = event.getAdvancement().getKey().toString();
-        if (!advancementKey.startsWith("minecraft:recipes/") && started && !player.isOp())
-        {
-            addScore(player, ADVANCEMENTSSCORES.get(advancementKey));
-        }
-    }
-
-    public void addScore(Player p, int amount)
-    {
-        for (int i = 0; i < TEAMCOUNT+1; i++)
-        {
-            if (p.hasPermission("fp.team" + i) && !p.isOp() && !p.hasPermission("fp.admin"))
-            {
-                Score score = objective.getScore(p.getName());
-                int newScore = score.getScore() + amount;
-                score.setScore(newScore);
-            }
-        }
-    }
-
-    public void setScore(Player p, int amount)
-    {
-        for (int i = 0; i < TEAMCOUNT+1; i++)
-        {
-            if (p.hasPermission("fp.team" + i) && !p.isOp() && !p.hasPermission("fp.admin"))
-            {
-                Score score = objective.getScore(p.getName());
-                score.setScore(amount);
-            }
-        }
-    }
-
-    public void setScoreboardToPlayer(Player player)
-    {
-        teamManager.getTeamByPlayer(player).addEntry(player.getName());
-        player.setScoreboard(scoreboard);
-        Score score = objective.getScore(player.getName());
-        score.setScore(0);
-    }
-
-    private void craeteScoreBoard(World world)
-    {
-        ScoreboardManager manager = Bukkit.getScoreboardManager();
-        scoreboard = manager.getNewScoreboard();
-        objective = scoreboard.registerNewObjective("test", "dummy", "Score");
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-
-        int i = 0;
-        for (String s : teamManager.getTeamsNames()) {
-            teamManager.teams.put(s, scoreboard.registerNewTeam(s));
-            teamManager.teams.get(s).setAllowFriendlyFire(false);
-            teamManager.teams.get(s).setColor(ChatColor.values()[i]);
-            //teamManager.teams.get(s).setSuffix(" - " + s);
-            i++;
         }
     }
 
     private void start(World world)
     {
-        //fill teams
         HashMap<String, ArrayList<Player>> teams = new HashMap<String, ArrayList<Player>>();
-
-        for (int i = 0; i < TEAMCOUNT+1; i++)
-        {
-            ArrayList<Player> teamPlayers = new ArrayList<Player>();
-            for (Player p : getServer().getOnlinePlayers())
-            {
-                if (p.hasPermission("fp.team" + i) && !p.isOp() && !p.hasPermission("fp.admin"))
-                {
-                    teamPlayers.add(p);
-                }
-            }
-            teams.put("team" + i, teamPlayers);
-        }
-
-        teamManager = new FPTeamManager(teams);
-
-        craeteScoreBoard(world);
-
-        getServer().getOnlinePlayers().forEach(player -> {player.setScoreboard(scoreboard);});
-        teams.values().forEach(players -> {players.forEach(player -> {setScoreboardToPlayer(player);});});
 
         getServer().getOnlinePlayers().forEach(player -> {player.sendMessage(ChatColor.RED + "Speedrun has started");});
 
