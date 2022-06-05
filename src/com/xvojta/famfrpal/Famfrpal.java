@@ -4,6 +4,9 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.mojang.authlib.minecraft.client.ObjectMapper;
+import com.mysql.fabric.xmlrpc.base.Array;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
@@ -31,6 +34,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.map.MapView;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.permissions.Permission;
@@ -40,8 +44,10 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 import org.bukkit.scoreboard.*;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
@@ -51,6 +57,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -59,7 +66,9 @@ import java.util.logging.Logger;
 
 public class Famfrpal extends JavaPlugin implements Listener
 {
-    HashMap<Material, Material> DropsOverrite = new HashMap<>();
+    HashMap<String, String[]> DropsOverrite = new HashMap<>();
+    HashMap<UUID, ArrayList<UUID>> PearlDrops = new HashMap<>();
+    //HashMap <Killer, list<KilledPlayers>>
     public static Famfrpal Instance;
     public boolean started = false;
     public Logger LOGGER = Bukkit.getLogger();
@@ -67,6 +76,8 @@ public class Famfrpal extends JavaPlugin implements Listener
     public Objective objective;
     public FPTeamManager teamManager;
     public Compass compass;
+    private static final PotionType[] hamfulPotions = {PotionType.WEAKNESS, PotionType.POISON, PotionType.SLOWNESS, PotionType.INSTANT_DAMAGE};
+    private static final PotionType[] friendlyPotions = {PotionType.SPEED, PotionType.JUMP, PotionType.STRENGTH, PotionType.INSTANT_HEAL, PotionType.REGEN};
 
     private static Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
 
@@ -86,8 +97,8 @@ public class Famfrpal extends JavaPlugin implements Listener
         PluginManager manager = getServer().getPluginManager();
         manager.registerEvents(this, this);
 
-/*        DropsOverrite.put(Material.DIRT, Material.DIAMOND);
-        DropsOverrite.put(Material.GRASS_BLOCK, Material.GOLDEN_HOE);
+        /*DropsOverrite.put(Material.DIRT.name(), new String[]{ Material.DIAMOND.name(), Material.MILK_BUCKET.name()});
+        DropsOverrite.put(Material.GRASS_BLOCK.name(), new String[] { Material.GOLDEN_HOE.name()} );
         String json = gson.toJson(DropsOverrite);
 
         try (PrintWriter out = new PrintWriter(new FileWriter("drops.json"))) {
@@ -102,7 +113,8 @@ public class Famfrpal extends JavaPlugin implements Listener
         } catch (Exception e) {
             e.printStackTrace();
         }
-        DropsOverrite = gson.fromJson(json, DropsOverrite.getClass());
+        Type type = new TypeToken<HashMap<String, String[]>>(){}.getType();
+        DropsOverrite = (HashMap<String, String[]>) gson.fromJson(json,type);
         LOGGER.info(json);
     }
 
@@ -122,23 +134,6 @@ public class Famfrpal extends JavaPlugin implements Listener
                 if (/*player.isOp()*/ player.hasPermission("fp.admin"))
                 {
                     start(world);
-                }
-                else
-                {
-                    player.sendMessage("You don't have permissions to this command!");
-                }
-            }
-        }
-        else if (label.equalsIgnoreCase("fpend")) {
-            if (!(sender instanceof Player)) {
-                end();
-            }
-            else
-            {
-                Player player = (Player) sender;
-                if (/*player.isOp()*/ player.hasPermission("fp.admin"))
-                {
-                    end();
                 }
                 else
                 {
@@ -171,12 +166,52 @@ public class Famfrpal extends JavaPlugin implements Listener
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onBlockBreak(BlockBreakEvent event){
-        Material block = event.getBlock().getType();
+        Block block = event.getBlock();
+        LOGGER.info(DropsOverrite.toString());
         Player player = event.getPlayer();
-        if (block == Material.GRASS_BLOCK){
-            event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.DIAMOND, 1));
+        LOGGER.info(DropsOverrite.keySet().toString());
+        if (DropsOverrite.containsKey(block.getType().name())) {
+            for (String mat : DropsOverrite.get(block.getType().name())) {
+                event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.getMaterial(mat), 1));
+            }
             event.setCancelled(true);
             event.getBlock().setType(Material.AIR);
+        }
+        if (block.getType() == Material.EMERALD_ORE) {
+            ((ExperienceOrb) block.getWorld().spawn(block.getLocation(), ExperienceOrb.class)).setExperience(7);
+            event.setCancelled(true);
+            event.getBlock().setType(Material.AIR);
+        }
+        if (block.getType() == Material.REDSTONE_ORE) {
+
+            //get Potion
+            Potion potion;
+            if(Math.random() > 0.5)
+            {
+                potion = new Potion(getRandomPotion(hamfulPotions));
+                potion.setSplash(true);
+            }
+            else {
+                potion = new Potion(getRandomPotion(friendlyPotions));
+                potion.setSplash(false);
+            }
+
+            event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), potion.toItemStack(1));
+            event.setCancelled(true);
+            event.getBlock().setType(Material.AIR);
+
+            //get Upgrade
+            if(Math.random() < 0.3)
+            {
+                if (Math.random() > 0.5)
+                {
+                    event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.REDSTONE, 1));
+                }
+                else
+                {
+                    event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.GLOWSTONE_DUST, 1));
+                }
+            }
         }
     }
 
@@ -201,6 +236,18 @@ public class Famfrpal extends JavaPlugin implements Listener
 
         if (started) {
             if (killer != null) {
+                if(PearlDrops.containsKey(killer.getUniqueId())) {
+                    if(PearlDrops.get(killer.getUniqueId()).contains(killedPlayer.getUniqueId())) {
+                        return;
+                    }
+                }
+                killedPlayer.getWorld().dropItemNaturally(killedPlayer.getLocation(), new ItemStack(Material.ENDER_PEARL, 1));
+                if(PearlDrops.containsKey(killer.getUniqueId())) {
+                    PearlDrops.get(killer.getUniqueId()).add(killedPlayer.getUniqueId());
+                }
+                else {
+                    PearlDrops.put(killer.getUniqueId(), new ArrayList<UUID>() {{ add(killedPlayer.getUniqueId()); }});
+                }
             }
         }
     }
@@ -216,7 +263,17 @@ public class Famfrpal extends JavaPlugin implements Listener
             if(!player.isOp()) {
                 if (event.getEntityType() == EntityType.ENDER_DRAGON) {
                     end();
+                    return;
                     //end game
+                }
+            }
+            if(DropsOverrite.containsKey(event.getEntityType().name()))
+            {
+                event.getDrops().clear();
+
+                for(String mat : DropsOverrite.get(event.getEntityType().name())) {
+                    ItemStack stack = new ItemStack(Material.getMaterial(mat), 1);
+                    event.getDrops().add(stack);
                 }
             }
         }
@@ -275,5 +332,10 @@ public class Famfrpal extends JavaPlugin implements Listener
         getServer().getOnlinePlayers().forEach(player -> {player.sendMessage(ChatColor.RED + "Speedrun has ended");});
 
         started = false;
+    }
+
+    public static PotionType getRandomPotion(PotionType[] array) {
+        int rnd = new Random().nextInt(array.length);
+        return array[rnd];
     }
 }
