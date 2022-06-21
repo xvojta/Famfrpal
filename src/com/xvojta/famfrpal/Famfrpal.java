@@ -5,60 +5,27 @@ import com.google.common.collect.ListMultimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.mojang.authlib.minecraft.client.ObjectMapper;
-import com.mysql.fabric.xmlrpc.base.Array;
 import org.bukkit.*;
-import org.bukkit.advancement.Advancement;
-import org.bukkit.advancement.AdvancementProgress;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.PistonMoveReaction;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.conversations.Conversation;
-import org.bukkit.conversations.ConversationAbandonedEvent;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
-import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.map.MapView;
-import org.bukkit.metadata.MetadataValue;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionAttachment;
-import org.bukkit.permissions.PermissionAttachmentInfo;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.Potion;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.bukkit.scoreboard.*;
-import org.bukkit.util.BoundingBox;
-import org.bukkit.util.RayTraceResult;
-import org.bukkit.util.Vector;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.FileWriter;
-import java.io.InputStream;
-import java.io.PrintWriter;
 import java.lang.reflect.Type;
-import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -67,14 +34,13 @@ import java.util.logging.Logger;
 public class Famfrpal extends JavaPlugin implements Listener
 {
     HashMap<String, String[]> DropsOverrite = new HashMap<>();
+    HashMap<String, String[]> Teams = new HashMap<>();
     HashMap<UUID, ArrayList<UUID>> PearlDrops = new HashMap<>();
     //HashMap <Killer, list<KilledPlayers>>
     public static Famfrpal Instance;
     public boolean started = false;
     public Logger LOGGER = Bukkit.getLogger();
     public Scoreboard scoreboard;
-    public Objective objective;
-    public FPTeamManager teamManager;
     public Compass compass;
     private static final PotionType[] hamfulPotions = {PotionType.WEAKNESS, PotionType.POISON, PotionType.SLOWNESS, PotionType.INSTANT_DAMAGE};
     private static final PotionType[] friendlyPotions = {PotionType.SPEED, PotionType.JUMP, PotionType.STRENGTH, PotionType.INSTANT_HEAL, PotionType.REGEN};
@@ -86,10 +52,6 @@ public class Famfrpal extends JavaPlugin implements Listener
     {
         compass = new Compass();
 
-        //Load advancement score rewards from yaml file
-        Yaml yaml = new Yaml();
-        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("achievements.yml");
-
         Instance = this;
 
         LOGGER.info("Famfrpal plugin funguje jako vzdy");
@@ -97,6 +59,7 @@ public class Famfrpal extends JavaPlugin implements Listener
         PluginManager manager = getServer().getPluginManager();
         manager.registerEvents(this, this);
 
+        // Examle of creating the drops.json
         /*DropsOverrite.put(Material.DIRT.name(), new String[]{ Material.DIAMOND.name(), Material.MILK_BUCKET.name()});
         DropsOverrite.put(Material.GRASS_BLOCK.name(), new String[] { Material.GOLDEN_HOE.name()} );
         String json = gson.toJson(DropsOverrite);
@@ -106,18 +69,34 @@ public class Famfrpal extends JavaPlugin implements Listener
         } catch (Exception e) {
             e.printStackTrace();
         }*/
-        String json = "";
+
+        String dropsJson = "";
+        String teamsJson = "";
         try
         {
-            json = new String(Files.readAllBytes(Paths.get("drops.json")));
+            dropsJson = new String(Files.readAllBytes(Paths.get("drops.json")));
+            teamsJson = new String(Files.readAllBytes(Paths.get("teams.json")));
         } catch (Exception e) {
             e.printStackTrace();
         }
         Type type = new TypeToken<HashMap<String, String[]>>(){}.getType();
-        DropsOverrite = (HashMap<String, String[]>) gson.fromJson(json,type);
-        LOGGER.info(json);
-    }
+        DropsOverrite = (HashMap<String, String[]>) gson.fromJson(dropsJson,type);
+        Teams = (HashMap<String, String[]>) gson.fromJson(teamsJson,type);
 
+        Iterator<String> iterator = Teams.keySet().iterator();
+        scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        for (int i = 0; i < Teams.keySet().size(); i++) {
+            String teamName = iterator.next();
+            Team Team = scoreboard.registerNewTeam(teamName);
+            Team.setAllowFriendlyFire(false);
+            Team.setCanSeeFriendlyInvisibles(true);
+            Team.setPrefix(teamName + " ");
+            Team.setColor(ChatColor.values()[i + 1]); //0 is black, not really visible
+            for (String player : Teams.get(teamName)) {
+                Team.addPlayer(Bukkit.getOfflinePlayer(player));
+            }
+        }
+    }
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] arguments)
     {
@@ -167,9 +146,7 @@ public class Famfrpal extends JavaPlugin implements Listener
     @EventHandler(priority=EventPriority.HIGH)
     public void onBlockBreak(BlockBreakEvent event){
         Block block = event.getBlock();
-        LOGGER.info(DropsOverrite.toString());
         Player player = event.getPlayer();
-        LOGGER.info(DropsOverrite.keySet().toString());
         if (DropsOverrite.containsKey(block.getType().name())) {
             for (String mat : DropsOverrite.get(block.getType().name())) {
                 event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.getMaterial(mat), 1));
@@ -222,6 +199,17 @@ public class Famfrpal extends JavaPlugin implements Listener
     }
 
     @EventHandler
+    public  void OnPlayerJoin(PlayerJoinEvent event)
+    {
+        Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+            @Override
+            public void run() {
+                event.getPlayer().setScoreboard(scoreboard);
+            }
+        }, 20L);
+    }
+
+    @EventHandler
     public void onPlayerUse(PlayerInteractEvent event)
     {
         if (event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.LEFT_CLICK_BLOCK)) return;
@@ -262,6 +250,7 @@ public class Famfrpal extends JavaPlugin implements Listener
         {
             if(!player.isOp()) {
                 if (event.getEntityType() == EntityType.ENDER_DRAGON) {
+                    LOGGER.info(player.getDisplayName());
                     end();
                     return;
                     //end game
@@ -290,39 +279,7 @@ public class Famfrpal extends JavaPlugin implements Listener
 
     private void end()
     {
-        ListMultimap<Integer, Team> teamsScoresPlayers = ArrayListMultimap.create();
-        LOGGER.info(teamManager.teams.toString());
-        teamManager.teams.values().forEach(team -> {
-            LOGGER.info(team.getName());
-            int score = 0;
-            for (OfflinePlayer player : team.getPlayers())
-            {
-                score += objective.getScore(player.getName()).getScore();
-                LOGGER.info(player.getName() + " " + objective.getScore(player.getName()).getScore());
-            }
-            teamsScoresPlayers.put(score, team);
-        });
-        List<Integer> scoresSorted = new ArrayList<Integer>(teamsScoresPlayers.keySet());
-        Collections.sort(scoresSorted);
-        for(Integer i : scoresSorted)
-        {
-            for (Player player : getServer().getOnlinePlayers())
-            {
-                for(Team team: teamsScoresPlayers.get(i))
-                {
-                    Collection<OfflinePlayer> offlinePlayers = team.getPlayers();
-                    ChatColor teamColor = team.getColor();
-                    //tohle neni stoprocentni
-                    if (offlinePlayers.stream().count() > 0) {
-                        offlinePlayers.forEach(offlinePlayer ->
-                        {
-                            player.sendMessage(teamColor + offlinePlayer.getPlayer().getDisplayName() + ": " + objective.getScore(offlinePlayer.getName()).getScore());
-                        });
-                        player.sendMessage(teamColor + "Total team score: " + i.toString());
-                    }
-                }
-            }
-        }
+
         World overworld = getServer().getWorlds().get(0);
         for (Player player : getServer().getOnlinePlayers())
         {
